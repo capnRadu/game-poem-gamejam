@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -23,6 +25,13 @@ public class PlayerController : MonoBehaviour
     private float sensitivity = 2.5f;
     private float xRotation = 0f;
 
+    [Header("Interaction")]
+    [SerializeField] private float lookDistance = 5f;
+    [SerializeField] private LayerMask interactableLayer;
+
+    [Header("UI")]
+    [SerializeField] private TextMeshProUGUI interactText;
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
@@ -40,6 +49,7 @@ public class PlayerController : MonoBehaviour
         Look();
         Crouch();
         Footsteps();
+        CheckForInteractable();
     }
 
     private void Move()
@@ -148,5 +158,30 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(time);
         footstepSound.pitch = UnityEngine.Random.Range(0.8f, 1.1f);
         footstepSound.Play();
+    }
+
+    private void CheckForInteractable()
+    {
+        Ray ray = new Ray(cam.transform.position, cam.transform.forward);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, lookDistance, interactableLayer))
+        {
+            if (hit.collider.CompareTag("Pickable"))
+            {
+                interactText.text = "Press E to pick up";
+                interactText.gameObject.SetActive(true);
+
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    Destroy(hit.collider.gameObject);
+                    interactText.gameObject.SetActive(false);
+                }
+            }            
+        }
+        else
+        {
+            interactText.gameObject.SetActive(false);
+        }
     }
 }

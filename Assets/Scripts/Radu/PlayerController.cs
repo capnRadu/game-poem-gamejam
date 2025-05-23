@@ -71,6 +71,11 @@ public class PlayerController : MonoBehaviour
         Sprint();
         Footsteps();
         CheckForInteractable();
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
     }
 
     private void Move()

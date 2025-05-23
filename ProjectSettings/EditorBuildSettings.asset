@@ -6,11 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/MainScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Scenes/Main Menu.unity
+    guid: d6348427c09aa4348b8c89f0bd367f46
   - enabled: 1
-    path: Assets/Scenes/Pause Screen.unity
-    guid: 6707006309132a54d815959726af51ab
+    path: Assets/Scenes/Level scene.unity
+    guid: 79a29739ba3dc7948b072af6f726ec46
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

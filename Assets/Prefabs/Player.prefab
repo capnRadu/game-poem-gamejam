@@ -229,8 +229,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 963b299308fbb454a84410ba2e8bb196, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 6
+  walkSpeed: 5
+  sprintSpeedAddition: 4
+  crouchSpeedAddition: -2
   jumpHeight: 1.2
+  state2SpeedAddition: 2
+  state3SpeedAddition: -4
+  state4SpeedAddition: 2
+  normalFOV: 60
+  sprintFOV: 70
   footstepSound: {fileID: 5732566027945746040}
   cam: {fileID: 5794508060017808204}
   lookDistance: 2
@@ -355,7 +362,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0

@@ -241,6 +241,7 @@ public class PlayerController : MonoBehaviour
                 {
                     Destroy(hit.collider.gameObject);
                     interactText.gameObject.SetActive(false);
+                    StageManager.Instance.CollectPage();
                 }
             }            
         }

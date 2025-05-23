@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -9,18 +11,26 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 6f;
     [SerializeField] private float jumpHeight = 1.2f;
-    private float gravity = -9.8f;
     [NonSerialized] public bool isGrounded;
     [NonSerialized] public bool isMoving;
     private bool isCrouching;
+    private float gravity = -9.8f;
     private Vector3 velocity;
     private Coroutine crouchCoroutine;
+    [SerializeField] private AudioSource footstepSound;
 
     [Header("Look")]
     [SerializeField] private Camera cam;
     private CameraHeadbob cameraHeadbob;
     private float sensitivity = 2.5f;
     private float xRotation = 0f;
+
+    [Header("Interaction")]
+    [SerializeField] private float lookDistance = 5f;
+    [SerializeField] private LayerMask interactableLayer;
+
+    [Header("UI")]
+    [SerializeField] private TextMeshProUGUI interactText;
 
     private void Awake()
     {
@@ -38,6 +48,8 @@ public class PlayerController : MonoBehaviour
         Move();
         Look();
         Crouch();
+        Footsteps();
+        CheckForInteractable();
     }
 
     private void Move()
@@ -121,5 +133,55 @@ public class PlayerController : MonoBehaviour
         }
 
         cam.transform.localPosition = end;
+    }
+
+    private void Footsteps()
+    {
+        if (isGrounded && isMoving)
+        {
+            if (!footstepSound.isPlaying)
+            {
+                if (!isCrouching)
+                {
+                    StartCoroutine(FootstepSound(0.08f));
+                }
+                else
+                {
+                    StartCoroutine(FootstepSound(0.15f));
+                }
+            }
+        }
+    }
+
+    private IEnumerator FootstepSound(float time)
+    {
+        yield return new WaitForSeconds(time);
+        footstepSound.pitch = UnityEngine.Random.Range(0.8f, 1.1f);
+        footstepSound.Play();
+    }
+
+    private void CheckForInteractable()
+    {
+        Ray ray = new Ray(cam.transform.position, cam.transform.forward);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, lookDistance, interactableLayer))
+        {
+            if (hit.collider.CompareTag("Pickable"))
+            {
+                interactText.text = "Press E to pick up";
+                interactText.gameObject.SetActive(true);
+
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    Destroy(hit.collider.gameObject);
+                    interactText.gameObject.SetActive(false);
+                }
+            }            
+        }
+        else
+        {
+            interactText.gameObject.SetActive(false);
+        }
     }
 }

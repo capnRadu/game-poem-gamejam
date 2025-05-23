@@ -80,7 +80,7 @@ public class CameraHeadbob : MonoBehaviour
     {
         if (transform.localPosition != startPos)
         {
-            transform.localPosition = Vector3.Lerp(transform.localPosition, startPos, 1 * Time.deltaTime);
+            transform.localPosition = Vector3.Lerp(transform.localPosition, startPos, 10 * Time.deltaTime);
         }
     }
 }

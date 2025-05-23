@@ -9,12 +9,13 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 6f;
     [SerializeField] private float jumpHeight = 1.2f;
-    private float gravity = -9.8f;
     [NonSerialized] public bool isGrounded;
     [NonSerialized] public bool isMoving;
     private bool isCrouching;
+    private float gravity = -9.8f;
     private Vector3 velocity;
     private Coroutine crouchCoroutine;
+    [SerializeField] private AudioSource footstepSound;
 
     [Header("Look")]
     [SerializeField] private Camera cam;
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour
         Move();
         Look();
         Crouch();
+        Footsteps();
     }
 
     private void Move()
@@ -121,5 +123,30 @@ public class PlayerController : MonoBehaviour
         }
 
         cam.transform.localPosition = end;
+    }
+
+    private void Footsteps()
+    {
+        if (isGrounded && isMoving)
+        {
+            if (!footstepSound.isPlaying)
+            {
+                if (!isCrouching)
+                {
+                    StartCoroutine(FootstepSound(0.08f));
+                }
+                else
+                {
+                    StartCoroutine(FootstepSound(0.15f));
+                }
+            }
+        }
+    }
+
+    private IEnumerator FootstepSound(float time)
+    {
+        yield return new WaitForSeconds(time);
+        footstepSound.pitch = UnityEngine.Random.Range(0.8f, 1.1f);
+        footstepSound.Play();
     }
 }

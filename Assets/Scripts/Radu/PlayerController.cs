@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -9,20 +10,22 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float moveSpeed = 6f;
     [SerializeField] private float jumpHeight = 1.2f;
     private float gravity = -9.8f;
-    private bool isGrounded;
-    private bool isMoving;
+    [NonSerialized] public bool isGrounded;
+    [NonSerialized] public bool isMoving;
     private bool isCrouching;
     private Vector3 velocity;
     private Coroutine crouchCoroutine;
 
     [Header("Look")]
     [SerializeField] private Camera cam;
+    private CameraHeadbob cameraHeadbob;
     private float sensitivity = 2.5f;
     private float xRotation = 0f;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+        cameraHeadbob = cam.GetComponent<CameraHeadbob>();
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -84,10 +87,12 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             HandleCrouch(new Vector3(0, 0.25f, 0), 1, 2f, true);
+            cameraHeadbob.SetToCrouchAmounts();
         }
         else if (Input.GetKeyUp(KeyCode.LeftControl))
         {
             HandleCrouch(new Vector3(0, 0.53f, 0), 2, 6f, false);
+            cameraHeadbob.SetToNormalAmounts();
         }
     }
 

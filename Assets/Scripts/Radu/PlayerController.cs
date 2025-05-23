@@ -11,9 +11,13 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     private float moveSpeed;
     [SerializeField] private float walkSpeed = 6f;
-    [SerializeField] private float sprintSpeed = 10f;
-    [SerializeField] private float crouchSpeed = 2f;
+    [SerializeField] private float sprintSpeedAddition = 4f;
+    [SerializeField] private float crouchSpeedAddition = -4f;
     [SerializeField] private float jumpHeight = 1.2f;
+
+    [SerializeField] private float state2SpeedAddition = 2f;
+    [SerializeField] private float state3SpeedAddition = -4f;
+    [SerializeField] private float state4SpeedAddition = 2f;
 
     [SerializeField] private float normalFOV = 60f;
     [SerializeField] private float sprintFOV = 67f;
@@ -23,6 +27,7 @@ public class PlayerController : MonoBehaviour
     [NonSerialized] public bool isCrouching;
 
     private bool isSprinting;
+    private bool isSprintLocked = true;
     private float gravity = -9.8f;
     private Vector3 velocity;
     private Coroutine crouchCoroutine;
@@ -113,7 +118,7 @@ public class PlayerController : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.LeftControl))
             {
-                HandleCrouch(new Vector3(0, 0.25f, 0), 1, crouchSpeed, true);
+                HandleCrouch(new Vector3(0, 0.25f, 0), 1, moveSpeed + crouchSpeedAddition, true);
                 cameraHeadbob.SetToCrouchAmounts();
             }
             else if (Input.GetKeyUp(KeyCode.LeftControl))
@@ -153,11 +158,11 @@ public class PlayerController : MonoBehaviour
 
     private void Sprint()
     {
-        if (!isCrouching)
+        if (!isCrouching && !isSprintLocked)
         {
             if (Input.GetKeyDown(KeyCode.LeftShift) && isMoving)
             {
-                HandleSprint(sprintSpeed, sprintFOV, true);
+                HandleSprint(moveSpeed + sprintSpeedAddition, sprintFOV, true);
                 cameraHeadbob.SetToSprintAmounts();
             }
             else if (Input.GetKeyUp(KeyCode.LeftShift))
@@ -243,5 +248,24 @@ public class PlayerController : MonoBehaviour
         {
             interactText.gameObject.SetActive(false);
         }
+    }
+
+    public void UpdateSpeed(string state)
+    {
+        switch (state)
+        {
+            case "State2":
+                walkSpeed += state2SpeedAddition;
+                break;
+            case "State3":
+                walkSpeed += state3SpeedAddition;
+                break;
+            case "State4":
+                walkSpeed += state4SpeedAddition;
+                isSprintLocked = false;
+                break;
+        }
+
+        moveSpeed = walkSpeed;
     }
 }

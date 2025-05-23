@@ -9,14 +9,24 @@ public class PlayerController : MonoBehaviour
     private CharacterController characterController;
 
     [Header("Movement")]
-    [SerializeField] private float moveSpeed = 6f;
+    private float moveSpeed;
+    [SerializeField] private float walkSpeed = 6f;
+    [SerializeField] private float sprintSpeed = 10f;
+    [SerializeField] private float crouchSpeed = 2f;
     [SerializeField] private float jumpHeight = 1.2f;
+
+    [SerializeField] private float normalFOV = 60f;
+    [SerializeField] private float sprintFOV = 67f;
+
     [NonSerialized] public bool isGrounded;
     [NonSerialized] public bool isMoving;
-    private bool isCrouching;
+    [NonSerialized] public bool isCrouching;
+
+    private bool isSprinting;
     private float gravity = -9.8f;
     private Vector3 velocity;
     private Coroutine crouchCoroutine;
+    private Coroutine sprintCoroutine;
     [SerializeField] private AudioSource footstepSound;
 
     [Header("Look")]
@@ -39,6 +49,8 @@ public class PlayerController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        moveSpeed = walkSpeed;
     }
 
     private void Update()
@@ -48,6 +60,7 @@ public class PlayerController : MonoBehaviour
         Move();
         Look();
         Crouch();
+        Sprint();
         Footsteps();
         CheckForInteractable();
     }
@@ -96,15 +109,18 @@ public class PlayerController : MonoBehaviour
 
     private void Crouch()
     {
-        if (Input.GetKeyDown(KeyCode.LeftControl))
+        if (!isSprinting)
         {
-            HandleCrouch(new Vector3(0, 0.25f, 0), 1, 2f, true);
-            cameraHeadbob.SetToCrouchAmounts();
-        }
-        else if (Input.GetKeyUp(KeyCode.LeftControl))
-        {
-            HandleCrouch(new Vector3(0, 0.53f, 0), 2, 6f, false);
-            cameraHeadbob.SetToNormalAmounts();
+            if (Input.GetKeyDown(KeyCode.LeftControl))
+            {
+                HandleCrouch(new Vector3(0, 0.25f, 0), 1, crouchSpeed, true);
+                cameraHeadbob.SetToCrouchAmounts();
+            }
+            else if (Input.GetKeyUp(KeyCode.LeftControl))
+            {
+                HandleCrouch(new Vector3(0, 0.53f, 0), 2, walkSpeed, false);
+                cameraHeadbob.SetToNormalAmounts();
+            }
         }
     }
 
@@ -133,6 +149,50 @@ public class PlayerController : MonoBehaviour
         }
 
         cam.transform.localPosition = end;
+    }
+
+    private void Sprint()
+    {
+        if (!isCrouching)
+        {
+            if (Input.GetKeyDown(KeyCode.LeftShift) && isMoving)
+            {
+                HandleSprint(sprintSpeed, sprintFOV, true);
+                cameraHeadbob.SetToSprintAmounts();
+            }
+            else if (Input.GetKeyUp(KeyCode.LeftShift))
+            {
+                HandleSprint(walkSpeed, normalFOV, false);
+                StartCoroutine(SmoothFovChange(normalFOV));
+            }
+        }
+    }
+
+    private void HandleSprint(float _moveSpeed, float _fov, bool _isSprinting)
+    {
+        if (sprintCoroutine != null)
+        {
+            StopCoroutine(sprintCoroutine);
+        }
+
+        sprintCoroutine = StartCoroutine(SmoothFovChange(_fov));
+        moveSpeed = _moveSpeed;
+        isSprinting = _isSprinting;
+    }
+
+    private IEnumerator SmoothFovChange(float targetFOV)
+    {
+        float startFOV = cam.fieldOfView;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < 0.2f)
+        {
+            cam.fieldOfView = Mathf.Lerp(startFOV, targetFOV, (elapsedTime / 0.2f));
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        cam.fieldOfView = targetFOV;
     }
 
     private void Footsteps()

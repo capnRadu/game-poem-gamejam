@@ -33,6 +33,9 @@ public class PlayerController : MonoBehaviour
     private Coroutine crouchCoroutine;
     private Coroutine sprintCoroutine;
     [SerializeField] private AudioSource footstepSound;
+    [SerializeField] private AudioSource musicSound;
+    [SerializeField] private AudioSource birdsSound;
+    [SerializeField] private AudioSource paperSound;
 
     [Header("Look")]
     [SerializeField] private Camera cam;
@@ -242,6 +245,7 @@ public class PlayerController : MonoBehaviour
                     Destroy(hit.collider.gameObject);
                     interactText.gameObject.SetActive(false);
                     StageManager.Instance.CollectPage();
+                    paperSound.Play();
                 }
             }            
         }
@@ -264,9 +268,28 @@ public class PlayerController : MonoBehaviour
             case "State4":
                 walkSpeed += state4SpeedAddition;
                 isSprintLocked = false;
+
+                musicSound.Play();
+                birdsSound.Play();
+                
+                StartCoroutine(VolumeTransition(musicSound, 1f, 2f));
+                StartCoroutine(VolumeTransition(birdsSound, 1f, 2f));
                 break;
         }
 
         moveSpeed = walkSpeed;
+    }
+
+    private IEnumerator VolumeTransition(AudioSource audioSource, float targetVolume, float duration)
+    {
+        float startVolume = audioSource.volume;
+        float elapsedTime = 0f;
+        while (elapsedTime < duration)
+        {
+            audioSource.volume = Mathf.Lerp(startVolume, targetVolume, (elapsedTime / duration));
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        audioSource.volume = targetVolume;
     }
 }

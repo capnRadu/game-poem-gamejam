@@ -10,10 +10,10 @@ public class StageManager : MonoBehaviour
     public static StageManager Instance;
 
     private int collectedPages = 0;
-    private int stage1Start = 6;
-    private int stage2Start = 10;
-    private int stage3Start = 15;
-    private int stage4Start = 20;
+    private int stage1Start = 2;
+    private int stage2Start = 6;
+    private int stage3Start = 10;
+    private int stage4Start = 15;
 
     [Header("Volume Settings")]
     [SerializeField] private List<VolumeProfile> volumeProfiles;

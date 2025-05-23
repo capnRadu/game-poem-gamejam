@@ -78,9 +78,9 @@ public class CameraHeadbob : MonoBehaviour
 
     private void StopHeadbob()
     {
-        if (transform.localPosition != startPos)
+        if (transform.localPosition != startPos && !playerController.isCrouching)
         {
-            transform.localPosition = Vector3.Lerp(transform.localPosition, startPos, 1 * Time.deltaTime);
+            transform.localPosition = Vector3.Lerp(transform.localPosition, startPos, 10 * Time.deltaTime);
         }
     }
 }

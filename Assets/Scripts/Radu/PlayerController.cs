@@ -3,7 +3,6 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -33,6 +32,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 velocity;
     private Coroutine crouchCoroutine;
     private Coroutine sprintCoroutine;
+
+    [Header("Sounds")]
     [SerializeField] private AudioSource footstepSound;
     [SerializeField] private AudioSource musicSound;
     [SerializeField] private AudioSource birdsSound;
@@ -292,12 +293,14 @@ public class PlayerController : MonoBehaviour
     {
         float startVolume = audioSource.volume;
         float elapsedTime = 0f;
+
         while (elapsedTime < duration)
         {
             audioSource.volume = Mathf.Lerp(startVolume, targetVolume, (elapsedTime / duration));
             elapsedTime += Time.deltaTime;
             yield return null;
         }
+
         audioSource.volume = targetVolume;
     }
 }

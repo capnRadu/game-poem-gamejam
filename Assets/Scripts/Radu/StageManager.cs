@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 
 public class StageManager : MonoBehaviour
 {
@@ -73,6 +71,7 @@ public class StageManager : MonoBehaviour
         {
             FindFirstObjectByType<PlayerController>().UpdateSpeed("State3");
         }
+
         if (collectedPages == stage1Start)
         {
             FindFirstObjectByType<PlayerController>().UpdateSpeed("State2");
@@ -86,7 +85,6 @@ public class StageManager : MonoBehaviour
 
     private void UpdateVolumeBlendGradually()
     {
-        // Determine which profiles we’re between
         if (collectedPages <= stage1Start)
         {
             targetFromIndex = 0;
@@ -132,27 +130,29 @@ public class StageManager : MonoBehaviour
             for (int i = 0; i < stagedVolumes.Count; i++)
             {
                 if (i == targetFromIndex)
+                {
                     stagedVolumes[i].weight = 1f - currentBlend;
+                }
                 else if (i == targetToIndex)
+                {
                     stagedVolumes[i].weight = currentBlend;
+                }
                 else
+                {
                     stagedVolumes[i].weight = 0f;
+                }
             }
 
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        // Final set
         stagedVolumes[targetFromIndex].weight = 1f - targetBlend;
         stagedVolumes[targetToIndex].weight = targetBlend;
     }
 
-    
-
     private void ShowFinalMessage()
     {
-        // Activate end panel, fade in text, etc.
         Debug.Log("You made it. Perseverance wins.");
     }
 }
